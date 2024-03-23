@@ -31,11 +31,25 @@ Follow these steps to install CorazaModule:
 
 4. Once the dependencies are installed and built, you can start using CorazaModule in your projects by importing as a module.
 
+
 ## Integrate with OWASP Core Ruleset
+
+1. Import the module into your Python project:
     ```python
     from corazamodule import gomodule
-    print(1+1)
     ```
+
+2. Call the CorazaModule :
+    ```go
+    waf, err := coraza.NewWAF(coraza.NewWAFConfig().
+		WithDirectivesFromFile("coraza.conf").
+		WithDirectivesFromFile("coreruleset/crs-setup.conf.example").
+		WithDirectivesFromFile("coreruleset/rules/*.conf").
+		WithDirectives(
+			`SecRule REMOTE_ADDR "!@ipMatch 127.0.0.1" "id:1,phase:1,deny,status:403"`,
+		))
+    ```
+
 
 ## Usage
 To use CorazaModule in your project, follow these steps:
