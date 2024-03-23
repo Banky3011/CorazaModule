@@ -39,7 +39,6 @@ Core Ruleset can be installed by importing each required file in the following o
     ```
     wget https://raw.githubusercontent.com/corazawaf/coraza/v3/dev/coraza.conf-recommended -O coraza.conf
     git clone https://github.com/coreruleset/coreruleset
-
     ```
 
 2. integrate the Core Ruleset:
