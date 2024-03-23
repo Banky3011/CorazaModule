@@ -8,7 +8,7 @@ Before using this project, please ensure that you meet the following requirement
     - You must have Go installed on your system. If you haven't installed it yet, you can download and install it from the [official Go website](https://golang.org/).
     
 2. **System Path Configuration:**
-    - Make sure that the directory containing the Go binary is added to your system's PATH environment variable. This ensures that you can run Go commands from any terminal or command prompt window.
+    - Make sure that the directory containing the Go binary is added to your system's PATH environment variable.
 
 
 ## Installation
@@ -43,5 +43,4 @@ To use CorazaModule in your project, follow these steps:
     ```python
     gomodule.Runserver()
     ```
-5. CorazaModule is now actively managing your security policies.
 
