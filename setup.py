@@ -11,15 +11,7 @@ Operations:
 - build: Build module from Go to Python
 """
 
-def check_dependencies_installed():
-    try:
-        subprocess.check_call(['gopy', 'version'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        return True
-    except subprocess.CalledProcessError:
-        return False
-
 def install_dependencies():
-    if not check_dependencies_installed():
         subprocess.check_call(['python3', '-m', 'pip', 'install', 'pybindgen'])
         subprocess.check_call(['go', 'get', 'github.com/gin-gonic/gin'])
         subprocess.check_call(['go', 'get', 'github.com/corazawaf/v3'])
@@ -27,8 +19,6 @@ def install_dependencies():
         subprocess.check_call(['go', 'install', 'golang.org/x/tools/cmd/goimports@latest'])
         subprocess.check_call(['wget', 'https://raw.githubusercontent.com/corazawaf/coraza/v3/dev/coraza.conf-recommended', '-O', 'coraza.conf'])
         subprocess.check_call(['git', 'clone', 'https://github.com/coreruleset/coreruleset'])        
-    else:
-        print("No dependencies to install")
 
 def run_build_script():
     subprocess.check_call(['gopy', 'build', '-output=./corazamodule', '-name=corazamodule', './gomodule'])
