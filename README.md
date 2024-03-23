@@ -36,7 +36,7 @@ To use CorazaModule in your project, follow these steps:
 
 1. Import the module into your Python script:
     ```python
-    from corazamodule import gomodules
+    from corazamodule import gomodule
     ```
 
 2. Initialize the CorazaModule object:
