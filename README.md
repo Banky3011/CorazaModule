@@ -33,14 +33,9 @@ Follow these steps to install CorazaModule:
 
 ## Integrate with OWASP Core Ruleset
     ```go
-    waf, err := coraza.NewWAF(coraza.NewWAFConfig().
-		WithDirectivesFromFile("coraza.conf").
-		WithDirectivesFromFile("coreruleset/crs-setup.conf.example").
-		WithDirectivesFromFile("coreruleset/rules/*.conf").
-		WithDirectives(
-			`SecRule REMOTE_ADDR "!@ipMatch 127.0.0.1" "id:1,phase:1,deny,status:403"`,
-		))
-    ```
+    waf, err := coraza.NewWAF(coraza.NewWAFConfig())
+	```
+    
 ## Usage
 To use CorazaModule in your project, follow these steps:
 
