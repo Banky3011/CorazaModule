@@ -33,13 +33,16 @@ Follow these steps to install CorazaModule:
 
 
 ## Integrate with OWASP Core Ruleset
+Core Ruleset can be installed by importing each required file in the following order:
 
-1. Import the module into your Python project:
-    ```python
-    from corazamodule import gomodule
+1. Install coraza.conf, coreruleset/crs-setup.conf.example, coreruleset/rules/*.conf:
+    ```
+    wget https://raw.githubusercontent.com/corazawaf/coraza/v3/dev/coraza.conf-recommended -O coraza.conf
+    git clone https://github.com/coreruleset/coreruleset
+
     ```
 
-2. Call the CorazaModule :
+2. integrate the Core Ruleset:
     ```go
     waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coraza.conf").
