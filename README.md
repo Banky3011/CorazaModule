@@ -4,7 +4,7 @@
 
 Before using this project, please ensure that you meet the following requirements:
 
-1. **Go Installation:**
+1. **Go Installation (V 1.22 +):**
     You must have Go installed on your system. If you haven't installed it yet, you can download and install it from the [official Go website](https://golang.org/).
     
 2. **System Path Configuration:**
