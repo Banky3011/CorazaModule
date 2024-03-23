@@ -20,10 +20,8 @@ def check_dependencies_installed():
 
 def install_dependencies():
     if not check_dependencies_installed():
-        print("--- install dependencies starting ---")
         subprocess.check_call(['go', 'get', 'github.com/go-python/gopy@latest'])
         subprocess.check_call(['go', 'install', 'golang.org/x/tools/cmd/goimports@latest'])
-        print("--- install dependencies ending ---")
     else:
         print("No dependencies to install")
 
@@ -40,7 +38,6 @@ def main():
     if operation == "install":
         install_dependencies()
     elif operation == "build":
-        print("--- building ---")
         run_build_script()
     else:
         print("Error")
