@@ -20,6 +20,7 @@ def check_dependencies_installed():
 
 def install_dependencies():
     if not check_dependencies_installed():
+        subprocess.check_call(['python3', '-m', 'pip', 'install', 'pybindgen'])
         subprocess.check_call(['go', 'get', 'github.com/go-python/gopy@latest'])
         subprocess.check_call(['go', 'install', 'golang.org/x/tools/cmd/goimports@latest'])
         subprocess.check_call(['wget', 'https://raw.githubusercontent.com/corazawaf/coraza/v3/dev/coraza.conf-recommended', '-O', 'coraza.conf'])

@@ -9,7 +9,14 @@ Before using this project, please ensure that you meet the following requirement
     
 2. **System Path Configuration:**
     - Make sure that the directory containing the Go binary is added to your system's PATH environment variable.
-
+    Here to add Go path:
+    ```
+    sudo nano ~/.bashrc
+    ```
+    Then save:
+    ```
+    source ~/.bashrc
+    ```
 
 ## Installation
 Follow these steps to install CorazaModule:
