@@ -17,6 +17,8 @@ Follow these steps to install CorazaModule:
 1. Clone this repository to your local machine:
     ```
     git clone https://github.com/Banky3011/CorazaModule.git
+    git clone https://github.com/Banky3011/CorazaModule.git
+    git clone https://github.com/Banky3011/CorazaModule.git
     ```
 
 2. Navigate to the project directory:
