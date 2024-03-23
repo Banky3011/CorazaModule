@@ -1,7 +1,15 @@
 # CorazaModule
 
-## Introduction
-CorazaModule is a powerful tool for managing security policies in your applications.
+## Requirements
+
+Before using this project, please ensure that you meet the following requirements:
+
+1. **Go Installation:**
+    - You must have Go installed on your system. If you haven't installed it yet, you can download and install it from the [official Go website](https://golang.org/).
+    
+2. **System Path Configuration:**
+    - Make sure that the directory containing the Go binary is added to your system's PATH environment variable. This ensures that you can run Go commands from any terminal or command prompt window.
+
 
 ## Installation
 Follow these steps to install CorazaModule:
