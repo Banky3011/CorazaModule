@@ -17,8 +17,6 @@ Follow these steps to install CorazaModule:
 1. Clone this repository to your local machine:
     ```
     git clone https://github.com/Banky3011/CorazaModule.git
-    git clone https://github.com/Banky3011/CorazaModule.git
-    git clone https://github.com/Banky3011/CorazaModule.git
     ```
 
 2. Navigate to the project directory:
@@ -34,7 +32,7 @@ Follow these steps to install CorazaModule:
 4. Once the dependencies are installed and built, you can start using CorazaModule in your projects by importing as a module.
 
 ## Integrate with OWASP Core Ruleset
-    ```Go
+    ```
     waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coraza.conf").
 		WithDirectivesFromFile("coreruleset/crs-setup.conf.example").
