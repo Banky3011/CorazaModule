@@ -33,11 +33,12 @@ Follow these steps to install CorazaModule:
     ```
 
 3. Install & Build the module:
+    After install, restart the ubuntu then you can try to build
     ```
     ./setup.py <operation>
     ```
 
-4. Once the dependencies are installed and built, you can start using CorazaModule in your projects by importing as a module.
+4.  
 
 
 ## Integrate with OWASP Core Ruleset
