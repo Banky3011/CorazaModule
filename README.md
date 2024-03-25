@@ -33,11 +33,9 @@ Follow these steps to install CorazaModule:
     ```
 
 3. Install & Build the module:
-    After install, restart the ubuntu then you can try to build
     ```
     ./setup.py <operation>
     ```
-
 
 ## Integrate with OWASP Core Ruleset
 Core Ruleset can be installed by importing each required file in the following order:
