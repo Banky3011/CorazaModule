@@ -7,14 +7,6 @@ import (
 	// "net/http"
 )
 
-// func showAllowed(c *gin.Context) {
-//     c.String(http.StatusOK, "Allowed")
-// }
-
-// func ShowTest(){
-// 	log.Fatalf("Hello")
-// }
-
 func MyWaf() gin.HandlerFunc {
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coraza.conf").
@@ -27,14 +19,6 @@ func MyWaf() gin.HandlerFunc {
 		log.Fatalf("Error creating WAF: %v", err)
 	}
 
-	// waf, err := coraza.NewWAF(coraza.NewWAFConfig().
-	// 	WithDirectives(
-	// 	`SecRule REMOTE_ADDR "!@ipMatch 127.0.0.1" "id:1,phase:1,deny,status:403"`,
-	// 	))
-	// 	if err != nil {
-	// 		log.Fatalf("Error creating WAF:", err)
-	// 	}
-	
 	return func(c *gin.Context) {
 		tx := waf.NewTransaction()
 		defer func() {

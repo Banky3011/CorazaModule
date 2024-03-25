@@ -38,8 +38,6 @@ Follow these steps to install CorazaModule:
     ./setup.py <operation>
     ```
 
-4.  
-
 
 ## Integrate with OWASP Core Ruleset
 Core Ruleset can be installed by importing each required file in the following order:
@@ -70,8 +68,11 @@ To use CorazaModule in your project, follow these steps:
     from corazamodule import gomodule
     ```
 
-2. Call the CorazaModule :
+2. Call the CorazaModule:
     ```python
     gomodule.Runserver()
     ```
-
+2. Run:
+    ```python
+    python3 <file_name>.py
+    ```
