@@ -7,7 +7,7 @@ __help__ = """
 Usage: ./setup.py <operation>
 
 Operations:
-- install: Install dependencies
+- install: Install dependencies and packages
 - build: Build module from Go to Python
 """
 
@@ -22,6 +22,7 @@ def install_dependencies():
 
 def run_build_script():
     subprocess.check_call(['gopy', 'build', '-output=./corazamodule', '-name=corazamodule', './gomodule'])
+    print("Build Success!")
 
 def main():
     if len(sys.argv) != 2:
