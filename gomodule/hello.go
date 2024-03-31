@@ -7,7 +7,14 @@ import (
 	// "net/http"
 )
 
-func MyWaf() gin.HandlerFunc {
+type Request struct {
+	Ip string,
+	Port int,
+	Header string,
+	Method string
+} 
+
+func MyWaf(req Request) gin.HandlerFunc {
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coraza.conf").
 		WithDirectivesFromFile("coreruleset/rules/*.conf").
