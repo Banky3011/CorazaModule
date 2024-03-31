@@ -9,7 +9,10 @@ import (
 
 func MyWaf() gin.HandlerFunc {
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
-		WithDirectives(`SecRule REMOTE_ADDR "@ipMatch 127.0.0.1" "id:1,phase:1,deny,status:403"`,))
+		WithDirectivesFromFile("coraza.conf").
+		WithDirectivesFromFile("coreruleset/rules/*.conf").
+		WithDirectivesFromFile("coreruleset/crs-setup.conf.example"),
+	)
 	if err != nil {
 		log.Fatalf("Error creating WAF: %v", err)
 	}
