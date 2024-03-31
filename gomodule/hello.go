@@ -4,17 +4,21 @@ import (
 	"github.com/corazawaf/coraza/v3"
     "github.com/gin-gonic/gin"
 	"log"
+	"fmt"
 	// "net/http"
 )
 
 type Request struct {
-	Ip string,
-	Port int,
-	Header string,
-	Method string
+	ip string
+	port int
 } 
 
 func MyWaf(req Request) gin.HandlerFunc {
+
+	println("In MyWaf Func")
+	println(req.ip)
+
+
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coraza.conf").
 		WithDirectivesFromFile("coreruleset/rules/*.conf").
@@ -32,24 +36,26 @@ func MyWaf(req Request) gin.HandlerFunc {
 			tx.Close()
 		}()
 	
-		tx.ProcessConnection("127.0.0.1", 8080, "127.0.0.1", 12345)
-	
-		if it := tx.ProcessRequestHeaders(); it != nil {
-			log.Printf("Transaction was interrupted with status %d\n", it.Status)
-			c.AbortWithStatus(it.Status)
-			return
-		} else {
-			log.Printf("Request Allowed")
-		}
-	
-		c.Next()
+		tx.ProcessConnection(req.ip, req.port, "127.0.0.1", 12345)
+    
+        if it := tx.ProcessRequestHeaders(); it != nil {
+            log.Printf("Transaction was interrupted with status %d\n", it.Status)
+            c.AbortWithStatus(it.Status)
+            return
+        } else {
+            log.Printf("Request Allowed")
+        }
+    
+        c.Next()
 	}
 }
 
-func RunServer() {
+func RunServer(req Request) {
 	r := gin.Default()
-	r.Use(MyWaf())
-	//r.GET("/", showAllowed)
+	//log.Printf(req.ip)
+	fmt.Printf("%v\n", req)
+	r.Use(MyWaf(req))
+
 
 	if err := r.Run(":8080"); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
@@ -57,5 +63,11 @@ func RunServer() {
 }
 
 func main() {
-	RunServer()
+
+	req := Request{
+		ip: "127.0.0.1",
+		port: 8080,
+	}
+
+	RunServer(req)
 }
