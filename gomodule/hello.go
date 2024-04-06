@@ -1,111 +1,77 @@
 package gomodule
 
 import (
+	"C"
 	"log"
-	"sync"
+	"strings"
 
 	"github.com/corazawaf/coraza/v3"
-	"github.com/gin-gonic/gin"
-	// "net/http"
 )
 
-var (
-	serverRunning bool
-	serverLock    sync.Mutex
-)
+type Request struct {
+	RemoteAddr  string
+	Path        string
+	Port        int
+	Query       string
+	HTTPVersion string
+	Headers     string
+	Body        string
+}
 
-func MyWaf() gin.HandlerFunc {
+func MyWaf(req Request) int {
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coraza.conf").
 		WithDirectivesFromFile("coreruleset/rules/*.conf").
-		WithDirectivesFromFile("coreruleset/crs-setup.conf.example"),
-	)
+		WithDirectivesFromFile("coreruleset/crs-setup.conf.example"))
+
 	if err != nil {
 		log.Fatalf("Error creating WAF: %v", err)
+		return 500
 	}
 
-	return func(c *gin.Context) {
-
-		clientIp := c.ClientIP()
-
-		log.Println("=== Client IP ===")
-		log.Println(clientIp)
-		log.Println("=================")
-
-		//userPort := c.Request.URL.Port()
-
-		tx := waf.NewTransaction()
-		defer func() {
-			tx.ProcessLogging()
-			log.Println("Transaction closed successfully")
-			tx.Close()
-		}()
-
-		tx.ProcessConnection("127.0.0.1", 55555, "127.0.0.1", 8081)
-
-		//tx.ProcessURI("")
-		tx.AddRequestHeader("Content-Type", "application/x-www-form-urlencoded")
-		tx.AddRequestHeader("Content-Type", "text/plain")
-
-		if it := tx.ProcessRequestHeaders(); it != nil {
-			log.Printf("Transaction was interrupted with status %d\n", it.Status)
-			c.AbortWithStatus(it.Status)
-			return
-		} else {
-			log.Printf("Request Allowed")
-		}
-
-		if typeInterupt, it := tx.ProcessRequestBody(); typeInterupt != nil {
-			log.Printf("Transaction was interrupted with status %d\n", typeInterupt.Status)
-			log.Println(it.Error())
-			return
-		}
-
-		c.Next()
-	}
-}
-
-func RunServer() {
-	serverLock.Lock()
-	defer serverLock.Unlock()
-
-	if serverRunning {
-		log.Println("Server is already running")
-		return
-	}
-
-	r := gin.Default()
-	r.Use(MyWaf())
-
-	go func() {
-		if err := r.Run(":8080"); err != nil {
-			log.Fatalf("Failed to run server: %v", err)
-		}
+	tx := waf.NewTransaction()
+	defer func() {
+		tx.ProcessLogging()
+		log.Println("Transaction closed successfully")
+		tx.Close()
 	}()
 
-	serverRunning = true
-	log.Println("Server started")
-}
+	tx.ProcessConnection(req.RemoteAddr, req.Port, "127.0.0.1", 8081)
 
-func StopServer() {
-	serverLock.Lock()
-	defer serverLock.Unlock()
+	tx.ProcessURI(req.Path, "?", req.HTTPVersion)
 
-	if !serverRunning {
-		log.Println("Server is not running")
-		return
+	headersMap := make(map[string]string)
+	headers := strings.Split(req.Headers, ",")
+	for _, header := range headers {
+		parts := strings.Split(header, ":")
+		if len(parts) == 2 {
+			key := strings.TrimSpace(parts[0])
+			value := strings.TrimSpace(parts[1])
+			headersMap[key] = value
+		}
 	}
 
-	serverRunning = false
-	log.Println("Server stopped")
-}
+	for name, value := range headersMap {
+		tx.AddRequestHeader(name, value)
+	}
 
-func is_server_running() bool {
-	serverLock.Lock()
-	defer serverLock.Unlock()
-	return serverRunning
-}
+	if it := tx.ProcessRequestHeaders(); it != nil {
+		log.Printf("(Phase 1) Transaction was interrupted with status %d\n", it.Status)
+		log.Printf("Interrupted Request Details:\n")
+		log.Printf("Remote Address: %s\n", req.RemoteAddr)
+		log.Printf("Request URI: %s\n", req.Path)
+		log.Printf("HTTP Version: %s\n", req.HTTPVersion)
+		log.Printf("Request Headers:\n%s\n", req.Headers)
+		log.Printf("Request Body:\n%s\n", req.Body)
+		return it.Status
+	}
 
-func main() {
-	RunServer()
+	if it, err := tx.ProcessRequestBody(); it != nil {
+		log.Printf("Transaction was interrupted in phase 2 with status %d\n", it.Status)
+		log.Print(err)
+		return it.Status
+	}
+
+	log.Printf("Request Allowed")
+	return 200
 }
