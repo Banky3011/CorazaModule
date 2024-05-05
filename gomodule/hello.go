@@ -2,6 +2,7 @@ package gomodule
 
 import (
 	"C"
+	"io"
 	"log"
 	"strings"
 
@@ -9,25 +10,31 @@ import (
 )
 
 type Request struct {
-	RemoteAddr  string
-	Path        string
-	Port        int
-	Query       string
-	HTTPVersion string
-	Headers     string
-	Body        string
+	RemoteAddr        string
+	Path              string
+	Port              int
+	Query             string
+	HTTPVersion       string
+	Method            string
+	Headers           string
+	Body              string
+	HeaderHost        string
+	HeaderUserAgent   string
+	HeaderContentType *string
 }
 
 func MyWaf(req Request) int {
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
-		WithDirectivesFromFile("coraza.conf").
-		WithDirectivesFromFile("coreruleset/rules/*.conf").
-		WithDirectivesFromFile("coreruleset/crs-setup.conf.example"))
+		WithDirectivesFromFile("coreruleset/crs-setup.conf").
+		WithDirectivesFromFile("coreruleset/modsecurity.conf").
+		WithDirectivesFromFile("coreruleset/rules/*.conf"))
 
 	if err != nil {
 		log.Fatalf("Error creating WAF: %v", err)
 		return 500
 	}
+
+	log.Printf(req.HeaderUserAgent)
 
 	tx := waf.NewTransaction()
 	defer func() {
@@ -36,38 +43,67 @@ func MyWaf(req Request) int {
 		tx.Close()
 	}()
 
-	tx.ProcessConnection(req.RemoteAddr, req.Port, "127.0.0.1", 8081)
+	// fmt.Println(req.RemoteAddr)
 
-	tx.ProcessURI(req.Path, "?", req.HTTPVersion)
+	tx.ProcessConnection(req.RemoteAddr, req.Port, "172.29.122.57", 8080)
 
-	headersMap := make(map[string]string)
-	headers := strings.Split(req.Headers, ",")
-	for _, header := range headers {
-		parts := strings.Split(header, ":")
-		if len(parts) == 2 {
-			key := strings.TrimSpace(parts[0])
-			value := strings.TrimSpace(parts[1])
-			headersMap[key] = value
-		}
-	}
+	tx.ProcessURI(req.Path, req.Method, req.HTTPVersion)
 
-	for name, value := range headersMap {
-		tx.AddRequestHeader(name, value)
+	tx.SetServerName(req.HeaderHost)
+
+	tx.AddRequestHeader("host", req.HeaderHost)
+	tx.AddRequestHeader("user-agent", req.HeaderUserAgent)
+	tx.AddRequestHeader("method", req.Method)
+
+	if req.HeaderContentType != nil {
+		tx.AddRequestHeader("content-type", *req.HeaderContentType)
 	}
 
 	if it := tx.ProcessRequestHeaders(); it != nil {
-		log.Printf("(Phase 1) Transaction was interrupted with status %d\n", it.Status)
-		log.Printf("Interrupted Request Details:\n")
-		log.Printf("Remote Address: %s\n", req.RemoteAddr)
-		log.Printf("Request URI: %s\n", req.Path)
-		log.Printf("HTTP Version: %s\n", req.HTTPVersion)
-		log.Printf("Request Headers:\n%s\n", req.Headers)
-		log.Printf("Request Body:\n%s\n", req.Body)
+		log.Printf("Transaction was interrupted with status %d\n", it.Status)
 		return it.Status
 	}
 
+	// log.Printf("---- req.body ----")
+	// log.Printf(req.Body)
+	// log.Printf("------------------")
+
+	if tx.IsRequestBodyAccessible() {
+		if req.Body != "" {
+			bodyReader := strings.NewReader(req.Body)
+			it, _, err := tx.ReadRequestBodyFrom(bodyReader)
+			if err != nil {
+				log.Printf("Failed to append request body: %v", err)
+				return 500
+			}
+
+			if it != nil {
+				log.Printf("Transaction was interrupted with status %d\n", it.Status)
+				return it.Status
+			}
+
+			rbr, err := tx.RequestBodyReader()
+			if err != nil {
+				log.Printf("Failed to get the request body: %v", err)
+				return 500
+			}
+
+			var remainingBody strings.Builder
+			_, err = io.Copy(&remainingBody, rbr)
+			if err != nil {
+				log.Printf("Failed to read the remaining request body: %v", err)
+				return 500
+			}
+
+			req.Body = remainingBody.String()
+			log.Printf("---- req.Body ----")
+			log.Printf(req.Body)
+			log.Printf("------------------")
+		}
+	}
+
 	if it, err := tx.ProcessRequestBody(); it != nil {
-		log.Printf("Transaction was interrupted in phase 2 with status %d\n", it.Status)
+		log.Printf("Transaction was interrupted with status %d\n", it.Status)
 		log.Print(err)
 		return it.Status
 	}
