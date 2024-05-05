@@ -65,6 +65,25 @@ To use module in your project, follow these steps:
 
 2. Call the module:
     ```python
-    gomodule.Runserver()
+    gomodule.MyWAF()
     ```
-2. Run the project
+3. Pass the necessary parameters to the module such as:
+    ```python
+        CorazaRequest = gomodule.Request(
+                RemoteAddr = request.ip,
+                Path = request.path,
+                Port = request.port,
+                Query = request.query_string,
+                HTTPVersion = request.version,
+                Method = request.method,
+                Headers = headers_str,
+                HeaderHost = HeaderHostPy,
+                HeaderUserAgent = HeaderUserAgentPy,
+                HeaderContentType = HeaderContentTypePy,
+                Body = request.Body,
+            )
+
+            result = gomodule.MyWaf(CorazaRequest)
+    ```
+
+4. Run the project
