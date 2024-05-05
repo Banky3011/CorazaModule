@@ -64,10 +64,6 @@ func MyWaf(req Request) int {
 		return it.Status
 	}
 
-	// log.Printf("---- req.body ----")
-	// log.Printf(req.Body)
-	// log.Printf("------------------")
-
 	if tx.IsRequestBodyAccessible() {
 		if req.Body != "" {
 			bodyReader := strings.NewReader(req.Body)
@@ -96,9 +92,6 @@ func MyWaf(req Request) int {
 			}
 
 			req.Body = remainingBody.String()
-			log.Printf("---- req.Body ----")
-			log.Printf(req.Body)
-			log.Printf("------------------")
 		}
 	}
 
