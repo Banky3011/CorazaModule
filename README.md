@@ -49,28 +49,22 @@ Core Ruleset can be installed by importing each required file in the following o
 2. integrate the Core Ruleset:
     ```go
     waf, err := coraza.NewWAF(coraza.NewWAFConfig().
-		WithDirectivesFromFile("coraza.conf").
-		WithDirectivesFromFile("coreruleset/crs-setup.conf.example").
-		WithDirectivesFromFile("coreruleset/rules/*.conf").
-		WithDirectives(
-			`SecRule REMOTE_ADDR "!@ipMatch 127.0.0.1" "id:1,phase:1,deny,status:403"`,
-		))
+		WithDirectivesFromFile("coreruleset/crs-setup.conf").
+		WithDirectivesFromFile("coreruleset/modsecurity.conf").
+		WithDirectivesFromFile("coreruleset/rules/*.conf"))
     ```
 
 
 ## Usage
-To use CorazaModule in your project, follow these steps:
+To use module in your project, follow these steps:
 
 1. Import the module into your Python project:
     ```python
     from corazamodule import gomodule
     ```
 
-2. Call the CorazaModule:
+2. Call the module:
     ```python
     gomodule.Runserver()
     ```
-2. Run:
-    ```python
-    python3 <file_name>.py
-    ```
+2. Run the project
