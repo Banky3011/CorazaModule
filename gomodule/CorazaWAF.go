@@ -23,7 +23,7 @@ type Request struct {
 	HeaderContentType *string
 }
 
-func CorazaModule(req Request) int {
+func CorazaWAF(req Request) int {
 	waf, err := coraza.NewWAF(coraza.NewWAFConfig().
 		WithDirectivesFromFile("coreruleset/crs-setup.conf").
 		WithDirectivesFromFile("coreruleset/modsecurity.conf").
@@ -35,6 +35,7 @@ func CorazaModule(req Request) int {
 	}
 
 	log.Printf(req.HeaderUserAgent)
+	log.Printf(req.RemoteAddr)
 
 	tx := waf.NewTransaction()
 	defer func() {
@@ -44,6 +45,8 @@ func CorazaModule(req Request) int {
 	}()
 
 	tx.ProcessConnection(req.RemoteAddr, req.Port, "172.29.122.57", 80)
+	tx.ProcessConnection("0.0.0.0", req.Port, "172.29.122.57", 80)
+	tx.ProcessConnection("192.168.1.101", req.Port, "172.29.122.57", 80)
 
 	tx.ProcessURI(req.Path, req.Method, req.HTTPVersion)
 
