@@ -65,7 +65,7 @@ To use module in your project, follow these steps:
 
 2. Call the module:
     ```python
-    gomodule.MyWAF()
+    gomodule.CorazaWAF()
     ```
 3. Pass the necessary parameters to the module such as:
     ```python
@@ -83,7 +83,7 @@ To use module in your project, follow these steps:
                 Body = request.Body,
             )
 
-            result = gomodule.MyWaf(CorazaRequest)
+            result = gomodule.CorazaWAF(CorazaRequest)
     ```
 
 4. Run the project
