@@ -1,0 +1,39 @@
+from sanic import Request
+from sanic.exceptions import Forbidden
+from gaimon.CorazaModule.corazamodule import gomodule
+
+class SecurityChecker:
+    def __init__(self, application):
+        from gaimon.core.AsyncApplication import AsyncApplication
+        self.application: AsyncApplication = application
+
+    async def check(self, request: Request) -> bool:
+
+        HeaderHostPy = request.headers.get('host')
+        HeaderUserAgentPy = request.headers.get('user-agent')
+        HeaderContentTypePy = request.headers.get('content-type')
+
+        headers_str = str(dict(request.headers))
+
+        CorazaRequest = gomodule.Request(
+            RemoteAddr = request.ip,
+            Path = request.path,
+            Port = request.port,
+            Query = request.query_string,
+            HTTPVersion = request.version,
+            Method = request.method,
+            Headers = headers_str,
+            HeaderHost = HeaderHostPy,
+            HeaderUserAgent = HeaderUserAgentPy,
+            HeaderContentType = HeaderContentTypePy,
+            Body = request.body.decode('utf-8'),
+        )
+
+        result = gomodule.CorazaWAF(CorazaRequest)
+
+        if result == 403:
+            raise Forbidden("Access Forbidden")
+        elif result != 200:
+            pass
+
+        return True
